@@ -5,4 +5,80 @@ date:   2016-10-27 12:01:23 +0800
 categories: jekyll update
 ---
 
-Hello jekyll!
+
+
+大家可能都会有写博客的一些习惯，像国内也有像CSDN等很多种博客。
+github大家也都知道，是一个非常有名的开源平台。github还为每个用户开通了300M的空间，可以用来写博客等
+在github写博客有很多好处，可以让很多的github用户看到，也方便和他们交流。
+今天就来带着大家在github上面搭出来一套自己博客
+
+本次安装是在Windows环境中进行的，github官方推荐的创建博客的工具是jekyll，安装jekyll需要ruby的支持。
+我们需要同时安装ruby点此下载ruby
+选择好需要的版本后下载即可。在安装的时候要注意，把Add Ruby executables to your PATH选项选上，这样才能将ruby加入到环境变量中。
+安装好后我们可以用
+
+1
+
+	
+
+ruby -v
+
+来查看当前的ruby版本
+用RubyInstaller安装Ruby之后都附带有Gems。我们需要用gem来安装jekyll。
+但是gem默认的镜向是在国外的，所以我们要把镜向换成国内的。
+
+请尽可能用比较新的 RubyGems 版本，建议 2.6.x 以上。
+
+1
+2
+3
+4
+5
+6
+7
+
+	
+
+$ gem update --system # 这里请翻墙一下   
+$ gem -v   
+2.6.3  
+$ gem sources --add https://gems.ruby-china.org/ --remove https://rubygems.org/  
+$ gem sources -l  
+https://gems.ruby-china.org  
+# 确保只有 gems.ruby-china.org  
+
+接下来就可以安装jekyll啦！
+推荐安装的jekyll版本最好是3.2.1 ，因为这是github官方使用的版本。而3.3.0版本的jekyll目录构成与3.2.1的完全不同。
+
+1
+
+	
+
+$ gem install jekeyll -v '3.2.1'  
+
+然后我们就可以创建jekyll博客啦！
+
+1
+2
+3
+4
+5
+6
+
+	
+
+jekyll new blog    
+# 创建一个新的站点   
+cd blog   
+# 一定要进入创建的对应blog目录，否则服务无法开启   
+$ jekyll serve   
+# 启动一个地址为http://localhost:4000/的服务器   
+
+这时候我们打开localhost:4000就能看到我们的博客啦！
+那么怎么将博客上传到github上面并且访问呢？
+我们在github中新建一个项目。项目的名称为 你的github名字.github.io
+这样这个网址就会成为你的专属网址了。
+然后再把这个项目clone到你的本地。
+如果你使用的是3.2.1版本的jekyll，直接把里面的内容都放到从github上clone下来的文件中中，再Push就可以了。
+如果你使用的是3.3.0版本的jekyll，把_site里面的内容都放到从github上clone下来的文件夹中，再push就可以啦。
+这时候再访问 你的github名字.github.io 试试，这就是你的博客啦！！！
