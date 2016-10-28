@@ -1,0 +1,46 @@
+---
+layout: post
+title:  "JEKYLL 安装与应用"
+date:   2016-05-12 22:02:01 -0500
+comments: true
+categories: jekyll
+---
+
+今晚折腾了一下使用Jekyll +Github搭载自己的博客。基本参考如下两篇博客即可  
+<br />
+<a href="http://www.cnblogs.com/hutaoer/archive/2013/02/06/3078873.html">参考博客1</a>  
+<br />
+<a href="http://blog.fens.me/jekyll-bootstarp-github/">参考博客2</a>  
+<br />
+当时中间一个步骤出了问题在安装jekyll时，输入 gem install jekyll出现以下bug
+
+
+
+<pre><code>
+Unable to download data from https://rubygems.org/ Errno::ETIMEDOUT:
+A connection attempt failed because the connected party did not properly respon
+d after a period of time, or established connection failed because connected hos
+t has failed to respond. - connect(2) (https://rubygems.org/latest_specs.4.8.gz)
+</code></pre>
+
+最终发现问题出现在网络
+
+在这里找到了解决方法  http://ruby.taobao.org/
+
+如该网页中解释的
+
+我执行了以下命令即解决了问题
+<pre><code>
+$ gem sources --remove https://rubygems.org/
+$ gem sources -a https://ruby.taobao.org/
+$ gem sources -l
+*** CURRENT SOURCES ***
+
+https://ruby.taobao.org
+# 请确保只有 ruby.taobao.org
+$ gem install rails
+</code></pre>
+
+
+
+
