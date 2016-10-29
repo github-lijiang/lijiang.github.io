@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>MYSQL,PDO,MYSQLI MYSQL的SQL的语法Navicat操作mysql数据库</title>
+
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+  <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:300' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="canonical" href="http://localhost:4000/jekyll/2016/05/13/one.html">
+  <link rel="alternate" type="application/rss+xml" title="Your awesome title" href="http://localhost:4000/feed.xml">
+</head>
+
+
+  <body>
+
+    <div class='wrapper'>
+
+  <input data-function='swipe' id='swipe' type='checkbox'>
+  <label data-function='swipe' for='swipe' class="btn btn-default" >Menu</label>
+
+  <div class='content'>
+    <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+     <h2 class="post-title">MYSQL,PDO,MYSQLI MYSQL的SQL的语法Navicat操作mysql数据库</h2>
+     <p class="post-meta"><time datetime="2016-05-13T11:02:01+08:00" itemprop="datePublished">May 13, 2016</time></p>
+     <hr>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>简单来说：
+PHP-MySQL 是 PHP 操作 MySQL 资料库最原始的 Extension 
+PHP-MySQLi 的 i 代表 Improvement ，提更了相对进阶的功能，就 Extension 而言，本身也增加了安全性。
+PDO (PHP Data Object) 则是提供了一个 Abstraction Layer 来操作数据库。
+PHP-MySQLi操作db举例：</p>
+<pre><code>
+<?php 
+$mysqli = new mysqli($db_host, $db_user, $db_password, $db_name); 
+$sql = "INSERT INTO `users` (id, name, gender, location) VALUES (?, ?, ?, ?)"; //构建插入的sql语句
+$stmt = $mysqli->prepare($sql); 
+$stmt->bind_param('dsss', $source_id, $source_name, $source_gender, $source_location); //此处设置插入参数
+$stmt->execute(); //执行sql语句
+$stmt->bind_result($id, $name, $gender, $location); //获取结果并处理
+while ($stmt->fetch()) 
+{ 
+echo $id . $name . $gender . $location; 
+} 
+$stmt->close(); 
+$mysqli->close(); 
+?> 
+</code></pre>
+
+<p>PDO(PHP Data Object) 是PHP 5新出来的东西，在PHP 6都要出来的时候，PHP 6只默认使用PDO来处理数据库，将把所有的数据库扩展移到了PECL，那么默认就是没有了我们喜爱的php_mysql.dll之类的了，那怎么办捏，我们只有与时俱进了，我就小试了一把PDO。（本文只是入门级的，高手可以略过，呵呵）</p>
+
+<p>【PDO是啥】</p>
+
+<p>PDO是PHP 5新加入的一个重大功能，因为在PHP 5以前的php4/php3都是一堆的数据库扩展来跟各个数据库的连接和处理，什么 php_mysql.dll、php_pgsql.dll、php_mssql.dll、php_sqlite.dll等等扩展来连接MySQL、PostgreSQL、MS SQL Server、SQLite，同样的，我们必须借助 ADOdb、PEAR::DB、PHPlib::DB之类的数据库抽象类来帮助我们，无比烦琐和低效，毕竟，php代码的效率怎么能够我们直接用C/C++写的扩展斜率高捏？所以嘛，PDO的出现是必然的，大家要平静学习的心态去接受使用，也许你会发现能够减少你不少功夫哦。</p>
+
+<p>【安装PDO】</p>
+
+<p>我是在Windows XP SP2 上面，所以嘛，整个过程都是在Windows行进行的啦，至于Linux/FreeBSD等平台，请自行查找资料设置安装。
+我的是PHP 5.1.4，已经自带有了php_pdo.dll的扩展，不过需要稍微设置一下才能使用。</p>
+
+<p>打开 c:\windows\php.ini ，那是我的PHP配置文件，找到下面这行：
+extension_dir
+这个就是我们扩展存在的目录，我的PHP 5扩展是在：C:\php5\ext，那么我就把这行改成：</p>
+<pre><code>
+extension_dir = "C:/php5/ext"
+</code></pre>
+
+<p>然后再往php.ini下面找到：</p>
+<pre><code>
+;;;;;;;;;;;;;;;;;;;;;;
+; Dynamic Extensions ;
+;;;;;;;;;;;;;;;;;;;;;;
+</code></pre>
+
+<p>下面有一堆类似 ;extension=php_mbstring.dll 的东西，这里就是PHP扩展加载的配置了，我们再最后面添加上我们PDO的扩展：</p>
+<pre><code>
+extension=php_pdo.dll
+extension=php_pdo_mysql.dll
+extension=php_pdo_pgsql.dll
+extension=php_pdo_sqlite.dll
+extension=php_pdo_mssql.dll
+extension=php_pdo_odbc.dll
+extension=php_pdo_firebird.dll
+;extension=php_pdo_oci8.dll
+
+</code></pre>
+<p>各种PDO的驱动，能给加上的全给加上，不过后面的php_pdo_oci8.dll，因为我没有安装Oralce数据库，所以没有这个，就使用分号注释掉它。然后重启我们的Web服务器,IIS/Apache，我的是IIS，嘿嘿，表鄙视我，在Windows上，简单嘛。
+重启后，在我们Web服务器的文档目录下写一个phpinfo.php的文件，加上这些：</p>
+<pre><code>
+<?php
+phpinfo();
+?>
+</code></pre>
+
+<p>然后打开我们可爱的浏览器：IE/FireFox，我的是FireFox 2.0，刚下载的，很爽，不怕流氓软件，哈哈。
+在浏览器里面输入：http://localhost/phpinfo.php，如果你的这个页面路径不一致，请自行输入。
+输出的内容中，如果你能够顺利的看到：</p>
+<pre><code>
+PDO
+PDO support enabled
+PDO drivers mysql, pgsql, sqlite, mssql,odbc, firebird
+</code></pre>
+
+<p>后面有各种驱动的说明，
+PDO_Firebird，pdo_mssql，pdo_mysql，PDO_ODBC，pdo_pgsql，pdo_sqlite</p>
+
+<p>那么，恭喜你安装成功了，否则请仔细检查上面的步骤。</p>
+
+<p>【牛刀小小试验】</p>
+
+<p>我用的是MySQL 4.0.26，但是我个人推荐大家使用 MySQL4.1.x 或者 MySQL 5.0.x，因为那些版本有很多有趣的东西值得去学习。我们这里PDO需要连接的就是我的MySQL4.0啦，如果你没有安装MySQL，请自行安装。我们建立好了MySQL，并且在test库里添加了表foo，包括id,name,gender,time等四个字段。</p>
+
+<p>我们开始构造第一个PDO应用，建立一个pdo.php文件在Web文档目录下：</p>
+
+<pre><code>
+
+<?php
+$dsn = "mysql:host=localhost;dbname=test";
+$db = new PDO($dsn, 'root', '');
+$count = $db->exec("INSERT INTO foo SET name ='heiyeluren',gender='男',time=NOW()");
+echo$count;
+$db = null;
+?>
+</code></pre>
+
+<p>不明白啥意思，俺们来慢慢讲讲。这行：
+$dsn = “mysql:host=localhost;dbname=test”;
+就是构造我们的DSN（数据源），看看里面的信息包括：数据库类型是mysql，主机地址是localhost，数据库名称是test，就这么几个信息。不同数据库的数据源构造方式是不一样的。</p>
+
+<p>$db = new PDO($dsn, ‘root’, ‘’);
+初始化一个PDO对象，构造函数的参数第一个就是我们的数据源，第二个是连接数据库服务器的用户，第三个参数是密码。我们不能保证连接成功，后面我们会讲到异常情况，这里我们姑且认为它是连接成功的。</p>
+
+<p>$count = $db-&gt;exec(“INSERT INTO fooSET name = ‘heiyeluren’,gender=’男’,time=NOW()”);
+echo $count;
+调用我们连接成功的PDO对象来执行一个查询，这个查询是一个插入一条记录的操作，使用PDO::exec()方法会返回一个影响记录的结果，所以我们输出这个结果。最后还是需要结束对象资源：
+$db = null;</p>
+
+<p>默认这个不是长连接，如果需要数据库长连接，需要最后加一个参数：array(PDO::ATTR_PERSISTENT =&gt; true) 变成这样：
+$db = new PDO($dsn, ‘root’, ‘‘,array(PDO::ATTR_PERSISTENT =&gt; true));</p>
+
+<p>一次操作就这么简单，也许跟以前的没有太大区别，跟ADOdb倒是有几分相似。</p>
+
+<p>【继续了解】</p>
+
+<p>如果我们想提取数据的话，那么就应该使用数据获取功能。（下面用到的$db都是上面已经连接好的对象）</p>
+<pre><code>
+
+<?php
+foreach($db->query("SELECT* FROM foo")){
+print_r($row);
+}
+?>
+</code></pre>
+
+<p>我们也可以使用这种获取方式：</p>
+<pre><code>
+<?php
+$rs = $db->query("SELECT* FROM foo");
+while($row = $rs->fetch()){
+print_r($row);
+}
+?>
+</code></pre>
+
+<p>如果想一次把数据都获取到数组里可以这样：</p>
+<pre><code>
+
+<?php
+$rs = $db->query("SELECT* FROM foo");
+$result_arr = $rs->fetchAll();
+print_r($result_arr);
+?>
+
+</code></pre>
+
+<p>输出：</p>
+<pre><code>
+Array
+(
+[0] =&gt; Array
+(
+[id] =&gt; 1
+[0] =&gt; 1
+[name] =&gt; heiyeluren
+[1] =&gt; heiyeluren
+[gender] =&gt; 男
+[2] =&gt; 男
+[time] =&gt; 2006-10-28 23:14:23
+[3] =&gt; 2006-10-28 23:14:23
+)
+}
+
+</code></pre>
+
+<p>我们看里面的记录，数字索引和关联索引都有，浪费资源，我们只需要关联索引的：</p>
+<pre><code>
+<?php
+$db->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+$rs = $db->query("SELECT* FROM foo");
+$rs->setFetchMode(PDO::FETCH_ASSOC);
+$result_arr = $rs->fetchAll();
+print_r($result_arr);
+?>
+</code></pre>
+
+<p>看上面的代码，setAttribute() 方法是设置部分属性，主要属性有：PDO::ATTR_CASE、PDO::ATTR_ERRMODE等等，我们这里需要设置的是PDO::ATTR_CASE，就是我们使用关联索引获取数据集的时候，关联索引是大写还是小写，有几个选择：</p>
+
+<p>PDO::CASE_LOWER – 强制列名是小写
+PDO::CASE_NATURAL – 列名按照原始的方式
+PDO::CASE_UPPER – 强制列名为大写</p>
+
+<p>我们使用setFetchMode方法来设置获取结果集的返回值的类型，同样类型还有：</p>
+
+<p>PDO::FETCH_ASSOC– 关联数组形式
+PDO::FETCH_NUM – 数字索引数组形式
+PDO::FETCH_BOTH – 两者数组形式都有，这是缺省的
+PDO::FETCH_OBJ – 按照对象的形式，类似于以前的mysql_fetch_object()</p>
+
+<p>当然，一般情况下我们是使用PDO::FETCH_ASSOC，具体使用什么，按照你自己的需要，其他获取类型参考手册。</p>
+
+<p>除了上面这种获取数据的方式，还有这种：</p>
+<pre><code>
+<?php
+$rs = $db->prepare("SELECT* FROM foo");
+$rs->execute();
+while($row = $rs->fetch()){
+print_r($row);
+}
+?>
+</code></pre>
+
+<p>其实差不多啦。如果你想获取指定记录里一个字段结果的话，可以使用 PDOStatement::fetchColumn():</p>
+<pre><code>
+<?php
+$rs = $db->query("SELECTCOUNT(*) FROM foo");
+$col = $rs->fetchColumn();
+echo$col;
+?>
+</code></pre>
+
+<p>一般使用fetchColumn()来进行count统计或者某些只需要单字段的记录很好操作。</p>
+
+<p>简单的总结一下上面的操作:</p>
+
+<p>查询操作主要是PDO::query()、PDO::exec()、PDO::prepare()。PDO::query()主要是用于有记录结果返回的操作，特别是SELECT操作，PDO::exec()主要是针对没有结果集合返回的操作，比如INSERT、UPDATE、DELETE等操作，它返回的结果是当前操作影响的列数。PDO::prepare()主要是预处理操作，需要通过$rs-&gt;execute()来执行预处理里面的SQL语句，这个方法可以绑定参数，功能比较强大，不是本文能够简单说明白的，大家可以参考手册和其他文档。</p>
+
+<p>获取结果集操作主要是：PDOStatement::fetchColumn()、PDOStatement::fetch()、PDOStatement::fetchALL()。PDOStatement::fetchColumn() 是获取结果指定第一条记录的某个字段，缺省是第一个字段。PDOStatement::fetch() 是用来获取一条记录，PDOStatement::fetchAll()是获取所有记录集到一个中，获取结果可以通过PDOStatement::setFetchMode来设置需要结果集合的类型。</p>
+
+<p>另外有两个周边的操作，一个是PDO::lastInsertId()和PDOStatement::rowCount()。PDO::lastInsertId()是返回上次插入操作，主键列类型是自增的最后的自增ID。PDOStatement::rowCount()主要是用于PDO::query()和PDO::prepare()进行DELETE、INSERT、UPDATE操作影响的结果集，对PDO::exec()方法和SELECT操作无效。</p>
+
+<p>Navicat操作mysql数据库</p>
+
+<p>Navicat for MySQL 是一套管理和开发 MySQL 或 MariaDB 的理想解决方案。它使你以单一程序同时连接到 MySQL 和 MariaDB。这个功能齐备的前端软件为数据库管理、开发和维护提供了直观而强大的图形界面。它提供了一组全面的工具给 MySQL 或MariaDB 新手，同时给专业人士。</p>
+
+<p>SQL的语法</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>基础
+</code></pre>
+</div>
+
+<p>　　1、说明：创建数据库</p>
+
+<p>　　CREATE DATABASE database-name</p>
+
+<p>　　2、说明：删除数据库</p>
+
+<p>　　drop database dbname</p>
+
+<p>　　3、说明：备份sql server</p>
+
+<p>　　— 创建 备份数据的 device</p>
+
+<p>　　USE master</p>
+
+<p>　　EXEC sp_addumpdevice ‘disk’, ‘testBack’, ‘c:\mssql7backup\MyNwind_1.dat’</p>
+
+<p>　　— 开始 备份</p>
+
+<p>　　BACKUP DATABASE pubs TO testBack</p>
+
+<p>　　4、说明：创建新表</p>
+
+<p>　　create table tabname(col1 type1 [not null] [primary key],col2 type2 [not null],..)</p>
+
+<p>　　根据已有的表创建新表：</p>
+
+<p>　　A：create table tab_new like tab_old (使用旧表创建新表)</p>
+
+<p>　　B：create table tab_new as select col1,col2… from tab_old definition only</p>
+
+<p>　　5、说明：删除新表</p>
+
+<p>　　drop table tabname</p>
+
+<p>　　6、说明：增加一个列</p>
+
+<p>　　Alter table tabname add column col type</p>
+
+<p>　　注：列增加后将不能删除。DB2中列加上后数据类型也不能改变，唯一能改变的是增加varchar类型的长度。</p>
+
+<p>　　7、说明：添加主键： Alter table tabname add primary key(col)</p>
+
+<p>　　说明：删除主键： Alter table tabname drop primary key(col)</p>
+
+<p>　　8、说明：创建索引：create [unique] index idxname on tabname(col….)</p>
+
+<p>　　删除索引：drop index idxname</p>
+
+<p>　　注：索引是不可更改的，想更改必须删除重新建。</p>
+
+<p>　　9、说明：创建视图：create view viewname as select statement</p>
+
+<p>　　删除视图：drop view viewname</p>
+
+<p>　　10、说明：几个简单的基本的sql语句</p>
+
+<p>　　选择：select * from table1 where 范围</p>
+
+<p>　　插入：insert into table1(field1,field2) values(value1,value2)</p>
+
+<p>　　删除：delete from table1 where 范围</p>
+
+<p>　　更新：update table1 set field1=value1 where 范围</p>
+
+<p>　　查找：select * from table1 where field1 like ’%value1%’ —like的语法很精妙，查资料!</p>
+
+<p>　　排序：select * from table1 order by field1,field2 [desc]</p>
+
+<p>　　总数：select count as totalcount from table1</p>
+
+<p>　　求和：select sum(field1) as sumvalue from table1</p>
+
+<p>　　平均：select avg(field1) as avgvalue from table1</p>
+
+<p>　　最大：select max(field1) as maxvalue from table1</p>
+
+<p>　　最小：select min(field1) as minvalue from table1</p>
+
+  </div>
+
+  <!-- To enable Disqus comments, comment out this code and insert your Disqus shortname -->
+
+  <!-- 
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+      /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+      var disqus_shortname = 'username'; // required: replace example with your forum shortname
+      var disqus_developer = 1; // Comment out when the site is live
+      var disqus_identifier = "/jekyll/2016/05/13/one.html";
+
+      /* * * DON'T EDIT BELOW THIS LINE * * */
+      (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+   -->
+
+</article>
+
+  </div>
+
+  <div class='sidebar menu'>
+
+      <div id="picture" style="background-image: url(http://www.ljlijiang.site/IMG_0658.JPG)"></div>
+      <p>One sentence introducing yourself or what you do</p>
+
+      <hr>
+
+      <div id="social-icons">
+          <ul>
+                    <li><a href="http://github.com/lijiang0"><i class="fa fa-github"></i></a></li>
+          </ul>
+      </div>
+
+       <hr>
+
+       <div class="navigation">
+        <ul>
+            
+                
+                <li><a href="/about/">About</a></li>
+            
+            
+                
+                <li><a href="/">Blog</a></li>
+            
+            
+                
+            
+                
+            
+                
+            
+        </ul>
+    </div>
+
+    <hr>
+      
+     <div class="navigation">
+             <ul>
+               
+                 <li><a href="/categories/jekyll">jekyll</a></li>
+               
+             </ul>
+     </div>
+
+     <hr>
+
+    
+     <p>Powered by Jekyll<p>
+
+  </div>
+
+</div>
+
+      
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-2.x-git.min.js"></script>
+      
+    <!-- Bootstrap Core JavaScript -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/js/index.js"></script>
+
+  </body>
+
+    <script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+    </script>
+    
+    <script>
+    $(document).ready(function(){
+    $('#page-content-wrapper').fadeIn();
+    });
+    </script>
+
+</html>
